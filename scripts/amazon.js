@@ -40,7 +40,7 @@ products.forEach((item) => {
         <img src="images/icons/checkmark.png">
         Added
       </div>
-      <button class="add-to-cart-button button-primary">
+      <button class="js-add-to-cart add-to-cart-button button-primary" data-id="${item.id}">
         Add to Cart
       </button>
     </div>
@@ -49,3 +49,39 @@ products.forEach((item) => {
 
 // Insert the HTML into the container
 productsGrid.innerHTML = productHTML;
+
+const addBtns = document.querySelectorAll('.js-add-to-cart');
+let matchObject
+// Iterate over each button and add an event listener
+addBtns.forEach((button) => {
+  button.addEventListener('click', () => {
+    // Access the product ID using dataset
+    const productId = button.dataset.id;
+    console.log(productId); // Logging the product ID
+     let matchingItem;
+
+     cart.forEach((item)=>{
+        if(item.id === productId){
+            matchingItem = item;
+         }
+     });
+
+     if(matchingItem) {
+        matchingItem.quantity+=1;
+     }   else {
+        cart.push({
+            productId:productId,
+            quantity:1,
+        })
+     }
+     console.log(cart)
+     let cartCount=0;
+     cart.forEach(item=>{
+         cartCount+=item.quantity;
+     })
+
+
+   document.querySelector('.js-cart-quantity').innerHTML=cartCount
+
+  });
+});
