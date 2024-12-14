@@ -1,8 +1,10 @@
-import { cart,addToCart } from "../data/cart.js";
+import { cart, addToCart } from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/format_currency.js";
+
 // Select the container where the products should be added
 const productsGrid = document.querySelector('.js-products-grid');
+const cartCountElement = document.querySelector('.js-cart-quantity'); // Renamed for clarity
 
 // Generate the product HTML
 let productHTML = '';
@@ -50,32 +52,30 @@ products.forEach((item) => {
   `;
 });
 
+// Function to update the cart UI
+function updateCartUi() {
+  let totalCartCount = 0; // Fixed naming for clarity
+  cart.forEach(item => {
+    totalCartCount += item.quantity; // Sum up quantities
+  });
 
-
-function updateCartUi () {
-  let cartCount=0;
-  cart.forEach(item=>{
-      cartCount+=item.quantity;
-  })
-
-
-document.querySelector('.js-cart-quantity').innerHTML=cartCount
+  cartCountElement.innerHTML = totalCartCount; // Update the cart icon
 }
 
 // Insert the HTML into the container
 productsGrid.innerHTML = productHTML;
 
+// Select all "Add to Cart" buttons
 const addBtns = document.querySelectorAll('.js-add-to-cart');
-let matchObject
-// Iterate over each button and add an event listener
+
+// Add event listeners to all buttons
 addBtns.forEach((button) => {
   button.addEventListener('click', () => {
-    // Access the product ID using dataset
-    const productId = button.dataset.id;
-    console.log(productId); // Logging the product ID
-     addToCart(productId)
-    
-    updateCartUi()
-
+    const productId = button.dataset.id; // Access product ID from dataset
+    addToCart(productId); // Add product to the cart
+    updateCartUi(); // Update the cart UI
   });
 });
+
+// Initial update to ensure the cart count is displayed properly on page load
+updateCartUi();
