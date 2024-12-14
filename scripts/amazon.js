@@ -1,3 +1,5 @@
+import { cart } from "../data/cart.js";
+import { products } from "../data/products.js";
 // Select the container where the products should be added
 const productsGrid = document.querySelector('.js-products-grid');
 
