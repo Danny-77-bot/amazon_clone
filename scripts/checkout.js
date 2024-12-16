@@ -1,10 +1,13 @@
 import { cart, removeFromCart } from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/format_currency.js";
+import { deliveryOptions } from "../data/deliveryoption.js";
+import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 
 // Initialize the checkout HTML string
 let checkoutHTML = '';
-let totalPrice = 0;  // To calculate the total price
+let totalPrice = 0; // To calculate the total price
+
 
 cart.forEach((cartItem) => {
     // Find the product that matches the cart item's productId
@@ -37,59 +40,54 @@ cart.forEach((cartItem) => {
                     </div>
                 </div>  
                 
-                    <div class="delivery-options">
-                <div class="delivery-options-title">
-                  Choose a delivery option:
-                </div>
-                <div class="delivery-option">
-                  <input type="radio" checked
-                    class="delivery-option-input"
-                    name="delivery-option-1">
-                  <div>
-                    <div class="delivery-option-date">
-                      Tuesday, June 21
+                <div class="delivery-options">
+                    <div class="delivery-options-title">
+                        Choose a delivery option:
                     </div>
-                    <div class="delivery-option-price">
-                      FREE Shipping
-                    </div>
-                  </div>
-                </div>
-
-                 <div class="delivery-option">
-                  <input type="radio"
-                    class="delivery-option-input"
-                    name="delivery-option-1">
-                  <div>
-                    <div class="delivery-option-date">
-                      Wednesday, June 15
-                    </div>
-                    <div class="delivery-option-price">
-                      $4.99 - Shipping
-                    </div>
-                  </div>
-                </div>
-
-                 <div class="delivery-option">
-                  <input type="radio"
-                    class="delivery-option-input"
-                    name="delivery-option-1">
-                  <div>
-                    <div class="delivery-option-date">
-                      Monday, June 13
-                    </div>
-                    <div class="delivery-option-price">
-                      $9.99 - Shipping
-                    </div>
-                  </div>
+                    ${deliveryOptionsHTML(matchingProduct, cartItem)}
                 </div>
             </div>
-
-             
-
- 
         </div>`;
     }
 });
+let backLink=document.querySelector('.js-retrun-to-home');
+const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+    backLink.innerHTML=totalQuantity
+
+function deliveryOptionsHTML(matchingProduct, cartItem) {
+    let HTML = '';
+    deliveryOptions.forEach((deliveryOption) => {
+        const today = dayjs();
+        const deliveryDate = today.add(deliveryOption.deliveryDays, 'days');
+        const dateString = deliveryDate.format('dddd, MMMM D');
+
+        const priceString = deliveryOption.priceCents === 0
+            ? 'Free'
+            : `$${formatCurrency(deliveryOption.priceCents)}`;
+
+        // Check if this option matches the selected delivery option for the cart item
+        const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
+
+        HTML += `
+        <div class="delivery-option">
+            <input type="radio" ${isChecked ? 'checked' : ''}
+                class="delivery-option-input"
+                name="delivery-option-${matchingProduct.id}" 
+                id="delivery-option-${deliveryOption.id}-${matchingProduct.id}" 
+                data-product-id="${matchingProduct.id}"
+                data-delivery-option-id="${deliveryOption.id}">
+            <div>
+                <div class="delivery-option-date">
+                    ${dateString}
+                </div>
+                <div class="delivery-option-price">
+                    ${priceString} - shipping
+                </div>
+            </div>
+        </div>`;
+    });
+    return HTML;
+}
 
 // Render the generated HTML into the order-summary container
 document.querySelector('.order-summary').innerHTML = checkoutHTML;
@@ -99,60 +97,35 @@ const deleteLinks = document.querySelectorAll('.delete-quantity-link');
 
 deleteLinks.forEach(link => {
     link.addEventListener('click', () => {
-        let productId = link.dataset.productId;
+        const productId = link.dataset.productId;
 
         // Remove item from the cart
         removeFromCart(productId);
 
         // Select and remove the cart item container
-        let container = document.querySelector(`.js-cart-item-container-${productId}`);
+        const container = document.querySelector(`.js-cart-item-container-${productId}`);
         if (container) {
-            container.remove();  // Remove the element from the DOM
+            container.remove(); // Remove the element from the DOM
         } else {
             console.error(`Container not found for productId: ${productId}`);
         }
-
-        // Optionally, update the total and payment summary
-        updatePaymentSummary();
     });
 });
 
-// Function to update the payment summary (item total, shipping, and total cost)
-function updatePaymentSummary() {
-    const paymentSummaryHTML = `
-        <div class="payment-summary-title">Order Summary</div>
-        <div class="payment-summary-row">
-            <div>Items (${cart.length}):</div>
-            <div class="payment-summary-money">${formatCurrency(totalPrice * 100)}</div>
-        </div>
-        <div class="payment-summary-row">
-            <div>Shipping &amp; handling:</div>
-            <div class="payment-summary-money">$4.99</div>
-        </div>
-        <div class="payment-summary-row subtotal-row">
-            <div>Total before tax:</div>
-            <div class="payment-summary-money">${formatCurrency((totalPrice + 4.99) * 100)}</div>
-        </div>
-        <div class="payment-summary-row">
-            <div>Estimated tax (10%):</div>
-            <div class="payment-summary-money">${formatCurrency(((totalPrice + 4.99) * 0.1) * 100)}</div>
-        </div>
-        <div class="payment-summary-row total-row">
-            <div>Order total:</div>
-            <div class="payment-summary-money">${formatCurrency(((totalPrice + 4.99) * 1.1) * 100)}</div>
-        </div>
-        <button class="place-order-button button-primary">
-            Place your order
-        </button>`;
+// Event listener for delivery option selection
+const deliveryOptionInputs = document.querySelectorAll('.delivery-option-input');
 
-    // Update the payment summary container
-    document.querySelector('.payment-summary').innerHTML = paymentSummaryHTML;
-}
+deliveryOptionInputs.forEach(option => {
+    option.addEventListener('change', () => {
+        const productId = option.dataset.productId;
+        const deliveryOptionId = option.dataset.deliveryOptionId;
 
+        // Update the cart with the selected delivery option
+        const cartItem = cart.find(item => item.productId === productId);
+        if (cartItem) {
+            cartItem.deliveryOptionId = deliveryOptionId;
+        }
 
-
-
-// Initialize the payment summary when the page loads
-updatePaymentSummary();
-
-
+        console.log(`Product ID: ${productId}, Selected Delivery Option ID: ${deliveryOptionId}`);
+    });
+});
