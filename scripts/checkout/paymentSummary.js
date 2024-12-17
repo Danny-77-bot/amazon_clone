@@ -1,7 +1,7 @@
-    import { cart } from "../data/cart.js";
-    import { products } from "../data/products.js";
-    import { deliveryOptions } from "../data/deliveryoption.js";
-    import { formatCurrency } from "./utils/format_currency.js";
+    import { cart } from "../../data/cart.js";
+    import { products } from "../../data/products.js";
+    import { deliveryOptions } from "../../data/deliveryoption.js";
+    import { formatCurrency } from "../utils/format_currency.js";
     export function renderPaymentSummary() {
         const paymentSummaryContainer = document.querySelector('.payment-summary');
     
