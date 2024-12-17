@@ -1,9 +1,10 @@
   import { cart, removeFromCart, updateDeliveryOption } from "../data/cart.js";
   import { products } from "../data/products.js";
   import { formatCurrency } from "./utils/format_currency.js";
-  import { deliveryOptions } from "../data/deliveryoption.js";
-  import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
+  import { deliveryOptions,deliveryOptionsHTML } from "../data/deliveryoption.js";
+   import { formatDate } from '../scripts/utils/form_date.js';
   import { renderPaymentSummary } from "./paymentSummary.js";
+ 
   // Initialize the checkout HTML string
   let checkoutHTML = '';
   let totalPrice = 0;
@@ -44,31 +45,7 @@
   }
   });
 
-  function deliveryOptionsHTML(matchingProduct, cartItem) {
-  let HTML = '';
-  deliveryOptions.forEach((deliveryOption) => {
-  const priceString = deliveryOption.priceCents === 0 ? 'Free' : `${formatCurrency(deliveryOption.priceCents)}`;
-  const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
-
-  HTML += `
-  <div class="delivery-option js-delivery-option"
-      data-product-id="${matchingProduct.id}"    
-      data-delivery-option-id="${deliveryOption.id}">
-  <input type="radio" ${isChecked ? 'checked' : ''}
-          class="delivery-option-input"
-          name="delivery-option-${matchingProduct.id}" 
-          id="delivery-option-${deliveryOption.id}-${matchingProduct.id}" 
-          data-product-id="${matchingProduct.id}"
-          data-delivery-option-id="${deliveryOption.id}">
-  <div>
-    <div class="delivery-option-date">${formatDate(deliveryOption)}</div>
-    <div class="delivery-option-price">${priceString} - shipping</div>
-  </div>
-  </div>`;
-  });
-  return HTML;
-  }
-
+ 
   // Render checkout HTML
   document.querySelector('.order-summary').innerHTML = checkoutHTML;
 
@@ -113,12 +90,7 @@
   renderPaymentSummary();
   });
 
-  function formatDate(deliveryOption) {
-  if (!deliveryOption) return "Unavailable";
-  const today = dayjs();
-  const deliveryDate = today.add(deliveryOption.deliveryDays, 'days');
-  return deliveryDate.format('dddd, MMMM D');
-  }
+  
 
   function displayDeliveryQuantity() {
   const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
