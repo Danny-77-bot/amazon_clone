@@ -61,6 +61,7 @@ export function orderSummaryRender () {
     const productId = link.dataset.productId;
   
     removeFromCart(productId);
+    renderPaymentSummary()
     displayDeliveryQuantity(cart);
   
     const container = document.querySelector(`.js-cart-item-container-${productId}`);
