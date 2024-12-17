@@ -23,7 +23,7 @@ export const deliveryOptions=[
 export  function deliveryOptionsHTML(matchingProduct, cartItem) {
   let HTML = '';
   deliveryOptions.forEach((deliveryOption) => {
-  const priceString = deliveryOption.priceCents === 0 ? 'Free' : `${formatCurrency(deliveryOption.priceCents)}`;
+  const priceString = deliveryOption.priceCents === 0 ? 'Free' : `$${formatCurrency(deliveryOption.priceCents)}`;
   const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
 
   HTML += `
@@ -38,7 +38,8 @@ export  function deliveryOptionsHTML(matchingProduct, cartItem) {
           data-delivery-option-id="${deliveryOption.id}">
   <div>
     <div class="delivery-option-date">${formatDate(deliveryOption)}</div>
-    <div class="delivery-option-price">${priceString} - shipping</div>
+    <div class="delivery-option-price">
+    ${priceString} - shipping</div>
   </div>
   </div>`;
   });

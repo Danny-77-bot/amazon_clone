@@ -1,4 +1,4 @@
-  import { cart, removeFromCart, updateDeliveryOption } from "../data/cart.js";
+  import { cart, displayDeliveryQuantity, removeFromCart, updateDeliveryOption } from "../data/cart.js";
   import { products } from "../data/products.js";
   import { formatCurrency } from "./utils/format_currency.js";
   import { deliveryOptions,deliveryOptionsHTML } from "../data/deliveryoption.js";
@@ -55,6 +55,7 @@
   const productId = link.dataset.productId;
 
   removeFromCart(productId);
+  displayDeliveryQuantity(cart);
 
   const container = document.querySelector(`.js-cart-item-container-${productId}`);
   if (container) {
@@ -64,7 +65,6 @@
   }
   });
   });
-
   // Event listener for delivery option selection
   document.querySelectorAll('.delivery-option-input').forEach(option => {
   option.addEventListener('change', () => {
@@ -76,32 +76,19 @@
 
   // Dynamically update the delivery date in the DOM
   const updatedDeliveryOption = deliveryOptions.find(option => option.id === deliveryOptionId);
-  console.log( updatedDeliveryOption)
+ 
   const deliveryDateElement = document.querySelector(`.js-delivery-date-${productId}`);
   if (deliveryDateElement && updatedDeliveryOption) {
   deliveryDateElement.textContent = `Delivery Date: ${formatDate(updatedDeliveryOption)}`;
   }
 
   console.log(`Product ID: ${productId}, Selected Delivery Option ID: ${deliveryOptionId}`);
-  });
-  option.addEventListener('change', () => {
-  renderPaymentSummary();
-  });
   renderPaymentSummary();
   });
 
-  
+  });
 
-  function displayDeliveryQuantity() {
-  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
-  const backLink = document.querySelector('.js-return-to-home');
-  if (backLink) {
-  backLink.innerHTML = totalQuantity;
-  }
-  }
-
-  displayDeliveryQuantity();
-
+  displayDeliveryQuantity(cart);
   renderPaymentSummary();
 
 

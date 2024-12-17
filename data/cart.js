@@ -35,3 +35,11 @@ export function updateDeliveryOption(productId, deliveryOptionId) {
     saveToStorage();
   }
 }
+
+export  function displayDeliveryQuantity(cart) {
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+  const backLink = document.querySelector('.js-return-to-home');
+  if (backLink) {
+  backLink.innerHTML = totalQuantity;
+  }
+  }
