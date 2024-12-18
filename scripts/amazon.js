@@ -1,6 +1,6 @@
 import { cart, addToCart } from "../data/cart.js";
-import { products } from "../data/products.js";
-import { formatCurrency } from "./utils/format_currency.js";
+import { products,product1 } from "../data/products.js";
+console.log(product1);
 
 // Select the container where the products should be added
 const productsGrid = document.querySelector('.js-products-grid');
@@ -18,13 +18,13 @@ products.forEach((item) => {
         ${item.name}
       </div>
       <div class="product-rating-container">
-        <img class="product-rating-stars" src="images/ratings/rating-${Math.floor((item.rating.stars) * 10)}.png">
+        <img class="product-rating-stars" src="${item.getStarUrl()}">
         <div class="product-rating-count link-primary">
           ${item.rating.count}
         </div>
       </div>
       <div class="product-price">
-        $${formatCurrency(item.priceCents)}
+        ${item.getPrice()}
       </div>
       <div class="product-quantity-container">
         <select>
