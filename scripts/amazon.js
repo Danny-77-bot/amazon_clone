@@ -1,6 +1,6 @@
 import { cart, addToCart } from "../data/cart.js";
-import { products,product1 } from "../data/products.js";
-console.log(product1);
+import { products} from "../data/products.js";
+
 
 // Select the container where the products should be added
 const productsGrid = document.querySelector('.js-products-grid');
@@ -40,6 +40,7 @@ products.forEach((item) => {
           <option value="10">10</option>
         </select>
       </div>
+         ${item.extraInfoHTML()} 
       <div class="product-spacer"></div>
       <div class="added-to-cart">
         <img src="images/icons/checkmark.png">
